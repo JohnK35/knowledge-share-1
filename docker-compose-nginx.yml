@@ -1,0 +1,50 @@
+version: '1'
+
+services:
+  nginx:
+    image: nginx:stable-alpine3.17-slim
+    container_name: nginx
+    depends_on:
+      - fastapi
+    ports:
+      - 80:80
+      - 443:443
+    restart: always
+    volumes:
+      - ./nginx/nginx-main.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf/:/etc/nginx/conf.d/:ro
+      - /tmp/app/secrets/cf-poclabs.co.pem:/etc/nginx/ssl/cf-poclabs.co.pem:ro
+      - /tmp/app/secrets/cf-poclabs.co.key:/etc/nginx/ssl/cf-poclabs.co.key:ro
+    #logging:
+    #  driver: gcplogs
+    networks:
+      - app_network
+      - dev_network
+
+  fastapi:
+    image: xxxxxxx:latest
+    container_name: fastapi
+    restart: always
+    environment:
+      - MAIL_HOST=smtp.gmail.com
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - MAIL_DEFAULT_EMAIL=${INV_MAIL_USER}
+    networks:
+      - app_network
+
+  fastapi-dev:
+    image: xxxxxxx:latest
+    container_name: fastapi-dev
+    restart: always
+    environment:
+      - MAIL_HOST=smtp.gmail.com
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - MAIL_DEFAULT_EMAIL=${INV_MAIL_USER}
+    networks:
+      - dev_network
+
+networks:
+  app_network:
+    name: app_network
+  dev_network:
+    name: dev_network

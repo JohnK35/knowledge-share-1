@@ -1,0 +1,57 @@
+---
+- name: prepare configure
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: Check hostname
+      ansible.builtin.shell:
+        cmd: hostname
+        chdir : ~
+
+    - name: check GCP account
+      ansible.builtin.shell:
+        cmd: gcloud config list account --format "value(core.account)"
+        chdir: ~
+
+    - name: Get a web public certicate from GCP Secret Manager
+      ansible.builtin.shell:
+        cmd: gcloud secrets versions access latest --secret='cf-poclabs-co-pem' --out-file='/tmp/app/secrets/cf-poclabs-co.pem' &&
+              chmod 644 '/tmp/app/secrets/cf-poclabs-co.pem'
+        chdir: ~
+    
+    - name: Get a web key from GCP Secret Manager
+      ansible.builtin.shell:
+        cmd: gcloud secrets versions access latest --secret='cf-poclabs-co-key' --out-file='/tmp/app/secrets/cf-poclabs-co.key' &&
+              chmod 644 '/tmp/app/secrets/cf-poclabs-co.key'
+        chdir: ~
+    
+    - name: Get a repo public certicate from GCP Secret Manager
+      ansible.builtin.shell:
+        cmd: gcloud secrets versions access latest --secret='knowledge-share-1-private-pub' --out-file='/tmp/app/secrets/knowledge-share-1-private.pub' &&
+              chmod 644 '/tmp/app/secrets/knowledge-share-1-private.pub'
+        chdir: ~
+
+    - name: Get a repo key from GCP Secret Manager
+      ansible.builtin.shell:
+        cmd: gcloud secrets versions access latest --secret='knowledge-share-1-private-key' --out-file='/tmp/app/secrets/knowledge-share-1-private' &&
+              chmod 644 '/tmp/app/secrets/knowledge-share-1-private'
+        chdir: ~
+
+    - name: Copy ssh_config to server
+      ansible.builtin.copy:
+        src: ./config/ssh_config
+        dest: /tmp/app/ssh_config
+        mode: '0644'
+        backup: yes
+
+    - name: Copy ssh_config to config ssh file
+      ansible.builtin.shell:
+        cmd: cat /tmp/app/ssh_config >> ~/.ssh/config 
+        chdir: ~
+
+    - name: Add known_hosts for github
+      ansible.builtin.shell:
+        cmd: ssh-keyscan github.com >> ~/.ssh/known_hosts
+        chdir: ~
+
+    

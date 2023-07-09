@@ -1,0 +1,7 @@
+
+###################
+# Add by ansible
+Host github.com
+    HostName github.com
+    IdentityFile /tmp/app/secrets/knowledge-share-1-private
+###################
