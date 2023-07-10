@@ -28,13 +28,13 @@
     - name: Get a repo public certicate from GCP Secret Manager
       ansible.builtin.shell:
         cmd: gcloud secrets versions access latest --secret='knowledge-share-1-private-pub' --out-file='/tmp/app/secrets/knowledge-share-1-private.pub' &&
-              chmod 644 '/tmp/app/secrets/knowledge-share-1-private.pub'
+              chmod 400 '/tmp/app/secrets/knowledge-share-1-private.pub'
         chdir: ~
 
     - name: Get a repo key from GCP Secret Manager
       ansible.builtin.shell:
         cmd: gcloud secrets versions access latest --secret='knowledge-share-1-private-key' --out-file='/tmp/app/secrets/knowledge-share-1-private' &&
-              chmod 644 '/tmp/app/secrets/knowledge-share-1-private'
+              chmod 400 '/tmp/app/secrets/knowledge-share-1-private'
         chdir: ~
 
     - name: Copy ssh_config to server
@@ -54,4 +54,8 @@
         cmd: ssh-keyscan github.com >> ~/.ssh/known_hosts
         chdir: ~
 
-    
+    - name: Git clone private repo
+      ansible.builtin.shell:
+        cmd: git clone --depth 1 git@github.com:JohnK35/knowledge-share-1-private.git /tmp/app/checkout/
+        chdir: ~
+
