@@ -1,6 +1,6 @@
 plugin: gcp_compute
 projects:
-- meawmeawx
+- terrafor-mars
 auth_kind: application
 keyed_groups:
   - key: labels

@@ -1,1 +1,5 @@
 logs/
+.terraform
+.terraform.lock.hcl
+.terraform.tfstate.lock.info
+ssh_remote_cert.pub
